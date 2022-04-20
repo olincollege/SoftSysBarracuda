@@ -1,7 +1,7 @@
 # Cuda Renderer Proposal
 Mateos Norian, Krishna Suresh, Merwan Yeditha
 
-###Experience with Last Project
+### Experience with Last Project
 
 **Krishna:** Overall the last project was enjoyable. I had a great experience in applying some of the theoretical concepts from signal processing and also got exposure to common compression techniques. I do hope to implement a more niche final result rather than purely reimplementing an existing algorithm.
 
