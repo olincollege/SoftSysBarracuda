@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
-
 set(CMAKE_BUILD_TYPE Debug)
+
+set(OpenGL_GL_PREFERENCE GLVND)
 project(Renderer)
 include_directories(../include)
-
 add_executable(main main.c)
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(main glfw)
