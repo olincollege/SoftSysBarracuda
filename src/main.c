@@ -1,54 +1,61 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "objects.h"
+#include "vec3.h"
+
+void calc_color(Ray r, Sphere s){
+    // right now make a solid color
+    //printf("%f %f %f\n",r.dir.x, r.dir.y, r.dir.z);
+    float t = hit_sphere(&r, s.center, s.rad);
+    if (t>0.0) {
+        Vec3 r_at = ray_at(r, t);
+        r_at.z -= 1;
+        norm(&r_at);
+        Color color = {0.5*(r_at.x+1),0.5*(r_at.y+1),0.5*(r_at.z+1)};
+        printf("%d %d %d\n", (int)(color.r*255.999), (int)(color.g*255.999), (int)(color.b*255.999));
+    } else {
+        Vec3 r_normd = get_norm(&(r.dir));
+        float t = 0.5*(r_normd.y + 1.0);
+        Color color = {(1.0-t)+t*0.5, (1.0-t)+t*0.7, (1.0-t)+t*1.0};
+        //printf("not circle\n");
+        printf("%d %d %d\n", (int)(color.r*255.999), (int)(color.g*255.999), (int)(color.b*255.999));
+    }
+}
 
 int main(){
-    //initialize glfw
-    glewExperimental = 1;
-    if ( !glfwInit() )
-    {
-        fprintf( stderr, "Failed to initialize GLFW\n" );
-        return -1;
+    // random ppm stuff
+    printf("P3\n400 225\n255\n");
+    // image params
+    const float aspect_ratio = 16.0/9.0;
+    const int image_width = 400;
+    const int image_height = 225;
+    // camera params
+    Vec3 origin = {0,0,0}; // not to be treated as a vector, just convenient
+    float viewport_height = 2.0;
+    float viewport_width = aspect_ratio * viewport_height;
+    float focal_length = 1.0;
+    Vec3 h = {viewport_width, 0, 0};
+    Vec3 v = {0, viewport_height, 0};
+    Vec3 foc_vec = {0, 0, focal_length};
+    Vec3 lower_left = {origin.x-(h.x/2)-(v.x/2),
+                            origin.y-(h.y/2)-(v.y/2),
+                            origin.z-(h.z/2)-(v.z/2)-focal_length};
+
+    //create the sphere
+    Vec3 sphere_center = {0,0,-1};
+    Sphere s = {&sphere_center, 0.5};
+    
+    for (int j = image_height-1; j>=0; j--){
+        for (int i = 0; i < image_width; i++){
+            float u = (float)i / (image_width+1);
+            float ve = (float)j / (image_height+1);
+            Vec3 dir = {lower_left.x+(h.x*u)+(v.x*ve)-origin.x,
+                        lower_left.y+(h.y*u)+(v.y*ve)-origin.y,
+                        lower_left.z+(h.z*u)+(v.z*ve)-origin.z};
+            //printf("%f %f %f\n", dir.x, dir.y, dir.z);
+            Ray r = {origin, dir};
+            calc_color(r, s);
+        }
     }
-
-    glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
-
-    // Open a window and create its OpenGL context
-    GLFWwindow* window; // (In the accompanying source code, this variable is global for simplicity)
-    window = glfwCreateWindow( 1024, 768, "Tutorial 01", NULL, NULL);
-    if( window == NULL ){
-        fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window); // Initialize GLEW
-    glewExperimental=1; // Needed in core profile
-    if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
-        return -1;
-    }
-
-    // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-    do{
-        // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
-        glClear( GL_COLOR_BUFFER_BIT );
-
-        // Draw nothing, see you in tutorial 2 !
-
-        // Swap buffers
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-    } // Check if the ESC key was pressed or the window was closed
-    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-        glfwWindowShouldClose(window) == 0 );
-
-
 }
