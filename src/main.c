@@ -38,12 +38,13 @@ void calc_color(Ray r, Sphere s, Sphere gnd){
 int main(){
     // random ppm stuff
     printf("P3\n400 225\n255\n");
+    FILE *file;
     // image params
     const float aspect_ratio = 16.0/9.0;
     const int image_width = 400;
     const int image_height = 225;
     // camera params
-    Vec3 origin = {0,0,0}; // not to be treated as a vector, just convenient
+    Vec3 origin = {0,0.5,0}; // not to be treated as a vector, just convenient
     float viewport_height = 2.0;
     float viewport_width = aspect_ratio * viewport_height;
     float focal_length = 1.0;

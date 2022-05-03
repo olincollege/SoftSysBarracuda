@@ -3,7 +3,7 @@
 ## Install 
 ```
 sudo apt-get update
-sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev apt-get install libglfw3 apt-get install libglfw3-dev
+sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev libglfw3 libglfw3-dev  libglew-dev
 ```
 ## Running
 
