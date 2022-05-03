@@ -1,5 +1,6 @@
 #include "vec3.h"
 
+
 float Q_rsqrt( float number )
 {
     // shamelessly stolen from the quake 3 algo
@@ -95,4 +96,35 @@ void op_multiple(Vec3* a, Vec3* b, Vec3* c, Vec3* d, Vec3* res){
 Vec3 ray_at(Ray r, float t){
     Vec3 res = {r.orig.x + r.dir.x*t, r.orig.y + r.dir.y, r.orig.z + r.dir.z};
     return res;
+}
+
+Vec3 random_vec(){
+    float x = 2*((float)rand()/(float)(RAND_MAX/1)-0.5);
+    float y = 2*((float)rand()/(float)(RAND_MAX/1)-0.5);
+    float z = 2*((float)rand()/(float)(RAND_MAX/1)-0.5);
+    Vec3 res = {x,y,z};
+    return res;
+}
+
+Vec3 random_in_unit_sphere() {
+    while (1) {
+        Vec3 p = random_vec();
+        if (len_sq(p) >= 1) continue;
+        return p;
+    }
+}
+
+Vec3 random_in_hemisphere(Vec3 normal) {
+    Vec3 in_unit_sphere = random_in_unit_sphere();
+    //printf("%f %f %f\n", in_unit_sphere.x, in_unit_sphere.y, in_unit_sphere.z);
+    if (dot(in_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+        return in_unit_sphere;
+    else
+        scale(&in_unit_sphere, -1);
+        return in_unit_sphere;
+}
+
+
+float len_sq(Vec3 vec){
+    return vec.x*vec.x+vec.y*vec.y+vec.z*vec.z;
 }

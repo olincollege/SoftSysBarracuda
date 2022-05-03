@@ -32,3 +32,7 @@ float dot(Vec3, Vec3);
 Vec3 get_norm(Vec3*);
 void op_multiple(Vec3* a, Vec3* b, Vec3* c, Vec3* d, Vec3* res);
 Vec3 ray_at(Ray, float);
+Vec3 random_vec();
+Vec3 random_in_unit_sphere();
+Vec3 random_in_hemisphere(Vec3);
+float len_sq(Vec3);
