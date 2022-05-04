@@ -1,6 +1,9 @@
 # Raytracing Renderer
 Mateos Norian, Krishna Suresh, Merwan Yeditha
 
+## Introduction to Raytracing
+Raytracing is a method of modeling light transport that calculates lighting of an object by tracing individual rays of light that shoot out from a camera. These rays are repeatedly tested for intersection with an object, and based on the point of intersection and material type, absorption/reflection of the ray can be modeled. This method of shading calculation is very computationally expensive, but can create photorealistic images, where techniques used in real-time renderers like OpenGL cannot achieve such fidelity.
+
 ## Goal 
 
 We want to code a raytracing engine/3D renderer using Cuda and C using WebAssembly so that the app can be run through a browser while using local resources. Our MVP would be to be able to ray trace for a fixed frame. A more stretch goal would be to somehow customize the scene that we are rendering (being able to place different types of objects, change position of light, add more light sources). 
@@ -21,10 +24,15 @@ We want to code a raytracing engine/3D renderer using Cuda and C using WebAssemb
 ## Project Progress
 
 Our team achieved:
-* Generating a PPM image
+
 * Implementing collision detection
+    * This involves shooting light-rays out of a camera and calculating which rays will eventually intersect with an object
 * Computing basic color calculation at collision point
+    * Given a point of collision, calculate a unit normal vector to the shape and use that to blend a color. In more complex raytracing applications the unit normal vector can be used to calculate reflections.
 * Implemented light diffusion calculation
+    * A diffuse material is a simple matte material that can be calculated by throwing random child-rays from the point at which a camera ray hits the object.
+* Generating a PPM image
+    * Writing our results so that the user can see a rendered image.
 
 
 ### Some example images generated (converted to JPEG)
@@ -39,8 +47,8 @@ Demonstrations of images generated with different camera angles.
 ![](a.jpg)
 *Image 3*
 
-
-One of the design decisions we faced was with the type of image we wanted to render. We chose to only attempt to display spheres as the surface normals for a sphere is far easier to calculate when compared with a more complex geometry. 
+### Design Decisions
+One of the design decisions we faced was with the type of image we wanted to render. We chose to only attempt to display spheres as the surface normals and intersection with a ray for a sphere is far easier to calculate when compared with a more complex geometry. 
 
 
 ```c-like
@@ -62,7 +70,8 @@ float hit_sphere(Ray* r, Vec3* center, float rad){
 ```
 One key element of the ray tracing algorithm is the detection of collisions between rays and objects in the scene. The `hit_sphere` function above calculates the intersections between the sphere and a ray by finding the roots to a quatratic equation. If no root is found we return -1 and if a root is found, the magnitude of the vector along the ray where the intersection occurs is returned.
 
-### Lambertian Spheres
+### Diffuse Spheres
+The next step we were able to partially implement was rendering a matte sphere rather than one shaded based on surface normals. The method used to model a diffuse sphere is first calculating the point at which a ray will intersect the object, and then generating vectors with random directions that shoot out from that point. Random vectors that intersect with other objects will make the surface of the sphere at those points darker, which can create the effect of shadows. We attempted to implement a diffuse material and were able to somewhat successfully do so for a single sphere, but were not able to get the calculation to fully work for our ground plane.
 ![Attempt at lambertian sphere render](f.png)
 
 *Attempt at Lambertian Sphere render*
